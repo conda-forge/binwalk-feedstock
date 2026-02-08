@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+schema_version: 1
+
+context:
+  version: "3.1.0"
+
+package:
+  name: binwalk
+  version: ${{ version }}
+
+source:
+  url: https://github.com/ReFirmLabs/binwalk/archive/refs/tags/v${{ version }}.tar.gz
+  sha256: 06f595719417b70a592580258ed980237892eadc198e02363201abe6ca59e49a
+
+build:
+  number: 0
+  skip: win
+  script:
+    env:
+      CARGO_PROFILE_RELEASE_STRIP: symbols
+      RUST_FONTCONFIG_DLOPEN: "on"
+    content:
+      - cargo-bundle-licenses --format=yaml --output "${SRC_DIR}/THIRDPARTY.yml"
+      - cargo auditable install --locked --no-track --path . --target "${CARGO_BUILD_TARGET}" --root "${PREFIX}"
+
+
+requirements:
+  build:
+    - ${{ compiler("c") }}
+    - ${{ compiler("cxx") }}
+    - ${{ compiler("rust") }}
+    - ${{ stdlib("c") }}
+    - cargo-auditable
+    - cargo-bundle-licenses
+    - pkg-config
+  host:
+    - bzip2
+    - fontconfig
+    - freetype
+    - liblzma-devel
+
+tests:
+  - package_contents:
+      bin:
+        - binwalk
+  - script:
+    - binwalk --version
+    - binwalk --help
+
+about:
+  summary: Firmware analysis tool
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  homepage: https://github.com/ReFirmLabs/binwalk
+  documentation: https://github.com/ReFirmLabs/binwalk/wiki
+
+extra:
+  recipe-maintainers:
+    - bollwyvl

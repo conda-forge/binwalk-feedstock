@@ -27,6 +27,7 @@ build:
 requirements:
   build:
     - ${{ compiler("c") }}
+    - ${{ compiler("cxx") }}
     - ${{ compiler("rust") }}
     - ${{ stdlib("c") }}
     - cargo-auditable
@@ -37,7 +38,6 @@ requirements:
     - fontconfig
     - freetype
     - liblzma-devel
-    - xz
 
 tests:
   - package_contents:
